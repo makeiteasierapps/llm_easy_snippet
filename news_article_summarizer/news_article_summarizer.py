@@ -48,6 +48,11 @@ def summarize_articles(article_urls):
     for article_url in article_urls:
         try:
             response = session.get(article_url, headers=headers, timeout=10)
+            # The free version of the GNews API only returns a part of the article so to create the summary
+            # we scrape the article using the newspaper library. Some sites may block this, if so we just skip
+            article = Article(article_url)
+            article.download()
+            article.parse()
         except Exception as exception:
             print(f"Error occurred while fetching article at {article_url}: {exception}")
             continue
@@ -56,11 +61,7 @@ def summarize_articles(article_urls):
             print(f"Failed to fetch article at {article_url}")
             continue
 
-        # The free version of the GNews API only returns a part of the article so to create the summary
-        # we scrape the article using the newspaper library
-        article = Article(article_url)
-        article.download()
-        article.parse()
+
 
         # Extract article data
         article_title = article.title
